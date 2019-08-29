@@ -1,0 +1,112 @@
+openapi: 3.0.1
+info:
+  title: RobotWars Client
+  description: This is the RobotWars Competitor API which competitors of RobotWars
+    tournaments have to implement
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /move:
+    post:
+      operationId: move_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveRequest'
+        required: true
+      responses:
+        200:
+          description: Received Move Request
+          content: {}
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    Bounds:
+      type: object
+      properties:
+        rows:
+          type: integer
+        cols:
+          type: integer
+    Position:
+      type: object
+      properties:
+        row:
+          type: integer
+        col:
+          type: integer
+    TerrainGrid:
+      type: object
+      additionalProperties:
+        type: string
+      description: Map of position to terrain (Attackable is not used yet)
+      example:
+        (0,0): 'GREEN [Movement Cost: 1, Attackable: true]'
+        (1,0): 'WATER [Movement Cost: 2, Attackable: false]'
+        (0,1): 'ROCK [Movement Cost: 1000, Attackable: false]'
+        (1,1): 'GREEN [Movement Cost: 1, Attackable: true]'
+    EffectGrid:
+      type: object
+      additionalProperties:
+        type: string
+      description: Map of position to effect. Amount is in brackets
+      example:
+        (0,0): ""
+        (1,0): Fire(1)
+        (0,1): Burnable
+        (1,1): Energy(5)
+    Robot:
+      type: object
+      properties:
+        player:
+          type: integer
+        position:
+          $ref: '#/components/schemas/Position'
+        energy:
+          type: integer
+        maxEnergy:
+          type: integer
+        health:
+          type: integer
+        shield:
+          type: integer
+        maxShield:
+          type: integer
+    Competitor:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+    Arena:
+      type: object
+      properties:
+        activePlayer:
+          type: integer
+        bounds:
+          $ref: '#/components/schemas/Bounds'
+        terrain:
+          $ref: '#/components/schemas/TerrainGrid'
+        effects:
+          $ref: '#/components/schemas/EffectGrid'
+        robots:
+          type: array
+          items:
+            $ref: '#/components/schemas/Robot'
+    MoveRequest:
+      type: object
+      properties:
+        requestUuid:
+          type: string
+        boutUuid:
+          type: string
+        arena:
+          $ref: '#/components/schemas/Arena'
+        playerCompetitorMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Competitor'
+
