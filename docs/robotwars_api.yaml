@@ -1,0 +1,722 @@
+openapi: 3.0.1
+info:
+  title: 'RobotWars Server'
+  description: 'This is a server implementing the RobotWars API'
+  version: 1.0.0
+paths:
+  /signup:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupBody'
+        required: true
+      responses:
+        201:
+          description: 'User created'
+          content: {}
+        409:
+          description: 'Username already exists'
+          content: {}
+  /login:
+    post:
+      description: 'Login and get bearer token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+        required: true
+      responses:
+        200:
+          description: 'Login successful, returning bearer token'
+          content:
+            application/text:
+              schema:
+                type: string
+              example: 'Bearer <token>'
+        401:
+          description: 'Unauthorized login attempt'
+          content: {}
+  /user:
+    get:
+      description: 'Get a list of all known users'
+      responses:
+        200:
+          description: 'Request successful, returning list of all known competitors'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientConfigList'
+    delete:
+      description: 'Sign off the calling user'
+      responses:
+        200:
+          description: 'User signed off'
+          content: {}
+        404:
+          description: 'Callign User not found. Using an old token?'
+          content: {}
+  /user/{username}:
+    delete:
+      description: 'Sign off the user with the given name'
+      parameters:
+        - name: username
+          in: path
+          description: 'The username of the user to sign off. Default is the callers username'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'User signed off'
+          content: {}
+        401:
+          description: 'Callign User has not the necessary permissions to sign this user off'
+          content: {}
+        404:
+          description: 'Callign User not found'
+          content: {}
+  /competitor:
+    get:
+      description: 'Get a list of all known competitors'
+      responses:
+        200:
+          description: 'Request successful, returning list of all known competitors'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientConfigList'
+    post:
+      description: 'Register a competitor'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientConfig'
+      responses:
+        200:
+          description: 'Competitor registered'
+          content:
+            application/text:
+              schema:
+                type: string
+              example: <uuid>
+  /competitor/{uuid}:
+    get:
+      description: 'Get a known competitor'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the competitor to fetch'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Request successful, returning requested competitor'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientConfig'
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        404:
+          description: 'Competitor not found'
+          content: {}
+    delete:
+      description: 'Delete a competitor (Force Unregister)'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the competitor to fetch'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Request successful, competitor deleted'
+          content: {}
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        404:
+          description: 'Competitor not found'
+          content: {}
+  /competitor/{uuid}/giveUpAllBouts:
+    get:
+      description: 'Make a competitor give up all bouts'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the competitor to fetch'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Request successful, competitor gave up all bouts'
+          content: {}
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        401:
+          description: 'Callign User has not the necessary permissions to make competitors give up'
+          content: {}
+        404:
+          description: 'Competitor not found'
+          content: {}
+  /competitor/{competitorUuid}/giveUpBout/{boutUuid}:
+    get:
+      description: 'Make a competitor give up a specific bout'
+      parameters:
+        - name: competitorUuid
+          in: path
+          description: 'The uuid of the competitor that has to give up a bout'
+          required: true
+          schema:
+            type: string
+        - name: boutUuid
+          in: path
+          description: 'The uuid of the bout which the competitor should give up'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Request successful, competitor gave up specified bout'
+          content: {}
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        401:
+          description: 'Callign User has not the necessary permissions to make competitors give up'
+          content: {}
+        404:
+          description: 'Competitor not found'
+          content: {}
+  /spectator:
+    get:
+      description: 'Get a list of all known spectators'
+      responses:
+        200:
+          description: 'Request successful, returning list of all known spectators'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientConfigList'
+    post:
+      description: 'Register a spectator'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientConfig'
+      responses:
+        200:
+          description: 'Spectator registered'
+          content:
+            application/text:
+              schema:
+                type: string
+              example: '<uuid>'
+  /spectator/{uuid}:
+    get:
+      description: 'Get a known spectator'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the spectator to fetch'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Request successful, returning requested spectator'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientConfig'
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        404:
+          description: 'Spectator not found'
+          content: {}
+    delete:
+      description: 'Delete a spectator (Force Unregister)'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the spectator to delete'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Request successful, spectator deleted'
+          content: {}
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        404:
+          description: 'Spectator not found'
+          content: {}
+  /spectator/{uuid}/showingInterestIn:
+    post:
+      description: 'Registering a spectator for updates to the list of UUIDs in the body. The old registration is overwritten'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the spectator that registers interest in uuids'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: 'Request successful, spectator deleted'
+          content: {}
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        404:
+          description: 'Spectator not found'
+          content: {}
+  /tournament:
+    get:
+      description: 'Get a list of all tournaments'
+      responses:
+        200:
+          description: 'Request successful, returning list of all tournaments'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentList'
+    post:
+      description: 'Create a tournament'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TournamentConfig'
+      responses:
+        201:
+          description: 'Tournament created'
+          content:
+            application/text:
+              schema:
+                type: string
+              example: <uuid>
+        400:
+          description: 'game config is not valid'
+          content: {}
+  /tournament/{uuid}:
+    get:
+      description: 'Get a tournament'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the tournament'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Request successful, returning list of all tournaments'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tournament'
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        404:
+          description: 'Tournament not found'
+          content: {}
+    delete:
+      description: 'delete tournament'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the spectator to delete'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Request successful, tournament deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tournament'
+        401:
+          description: 'Only admins can delete tournaments'
+          content: {}
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        404:
+          description: 'Tournament not found'
+          content: {}
+  /tournament/{uuid}/stats:
+    get:
+      description: 'Get tournament stats'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the tournament '
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Request successful, returning stat of tournament'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentStats'
+        400:
+          description: 'Invalid request. Uuid was null'
+          content: {}
+        404:
+          description: 'Tournament not found'
+          content: {}
+  /tournament/{uuid}/start:
+    get:
+      description: 'Start the tournament'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the tournament to start'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Tournament started'
+          content: {}
+        400:
+          description: 'Invalid request. tournament not open | not enough competitors signed up for tournament | uuid was null'
+          content: {}
+        404:
+          description: 'Tournament not found'
+          content: {}
+  /tournament/{tournamentUuid}/signup/{competitorUuid}:
+    get:
+      description: 'Get a tournament'
+      parameters:
+        - name: tournamentUuid
+          in: path
+          description: 'The uuid of the tournament'
+          required: true
+          schema:
+            type: string
+        - name: competitorUuid
+          in: path
+          description: 'The uuid of the competitor'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Tournament started'
+          content: {}
+        400:
+          description: 'Invalid request. tournament is not open anymore or competitor has already signed up'
+          content: {}
+        404:
+          description: 'Tournament or competitor not found'
+          content: {}
+  /bout/{uuid}/moveResponse:
+    post:
+      description: 'Endpoint accepting MoveResponse objects from competitors answering to received MoveRequests'
+      parameters:
+        - name: uuid
+          in: path
+          description: 'The uuid of the bout this response is meant for'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveResponse'
+      responses:
+        200:
+          description: 'MoveResponse received successfully'
+          content: {}
+        404:
+          description: 'Target Bout not found'
+          content: {}
+components:
+  schemas:
+    SignupBody:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginBody:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    ClientConfig:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        url:
+          type: string
+    ClientConfigList:
+      type: array
+      items:
+        $ref: '#/components/schemas/ClientConfig'
+    TournamentConfig:
+      type: object
+      properties:
+        matchName:
+          type: string
+        arenaSize:
+          type: integer
+        pairingSize:
+          type: integer
+        energyRefillPerRound:
+          type: integer
+        competitorUuids:
+          type: array
+          items:
+            type: string
+        terrainWaterChance:
+          type: number
+        terrainRockChance:
+          type: number
+        effectBurnableChance:
+          type: number
+        effectEnergyChance:
+          type: number
+        effectEnergyMax:
+          type: integer
+        robotHealthInitial:
+          type: integer
+        robotEnergyInitial:
+          type: integer
+        robotEnergyMax:
+          type: integer
+        robotshieldInitial:
+          type: integer
+        robotShieldMax:
+          type: integer
+        randomSeed:
+          type: integer
+          nullable: true
+    TournamentParameters:
+      type: object
+      properties:
+        bounds:
+          $ref: '#/components/schemas/Bounds'
+        energyRefillPerRound:
+          type: integer
+        terrainWaterChance:
+          type: number
+        terrainRockChance:
+          type: number
+        effectBurnableChance:
+          type: number
+        effectEnergyChance:
+          type: number
+        effectEnergyMax:
+          type: integer
+        robotHealthInitial:
+          type: integer
+        robotEnergyInitial:
+          type: integer
+        robotEnergyMax:
+          type: integer
+        robotshieldInitial:
+          type: integer
+        robotShieldMax:
+          type: integer
+        randomSeed:
+          type: integer
+          nullable: true
+    Tournament:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        competitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Competitor'
+        bouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bout'
+        tournamentParameters:
+          $ref: '#/components/schemas/TournamentParameters'
+        state:
+          type: string
+          enum:
+            - OPEN
+            - STARTED
+            - FINISHED
+    Bout:
+      type: object
+      properties:
+        uuid:
+          type: string
+        competitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Competitor'
+        winner:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Competitor'
+        arena:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Arena'
+        tournamentParameters:
+          $ref: '#/components/schemas/TournamentParameters'
+        state:
+          type: string
+          enum:
+            - REGISTERED
+            - STARTED
+            - FINISHED
+    Arena:
+      type: object
+      properties:
+        activePlayer:
+          type: integer
+        bounds:
+          $ref: '#/components/schemas/Bounds'
+        terrain:
+          $ref: '#/components/schemas/TerrainGrid'
+        effects:
+          $ref: '#/components/schemas/EffectGrid'
+        robots:
+          type: array
+          items:
+            $ref: '#/components/schemas/Robot'
+    Bounds:
+      type: object
+      properties:
+        rows:
+          type: integer
+        cols:
+          type: integer
+    TerrainGrid:
+      type: object
+      description: 'Map of position to terrain (Attackable is not used yet)'
+      additionalProperties:
+        type: string
+      example:
+        (0,0): 'GREEN [Movement Cost: 1, Attackable: true]'
+        (1,0): 'WATER [Movement Cost: 2, Attackable: false]'
+        (0,1): 'ROCK [Movement Cost: 1000, Attackable: false]'
+        (1,1): 'GREEN [Movement Cost: 1, Attackable: true]'
+    EffectGrid:
+      type: object
+      description: 'Map of position to effect. Amount is in brackets'
+      additionalProperties:
+        type: string
+      example:
+        (0,0): ''
+        (1,0): 'Fire(1)'
+        (0,1): 'Burnable'
+        (1,1): 'Energy(5)'
+    Robot:
+      type: object
+      properties:
+        player:
+          type: integer
+        position:
+          $ref: '#/components/schemas/Position'
+        energy:
+          type: integer
+        maxEnergy:
+          type: integer
+        health:
+          type: integer
+        shield:
+          type: integer
+        maxShield:
+          type: integer
+    Position:
+      type: object
+      properties:
+        row:
+          type: integer
+        col:
+          type: integer
+    TournamentList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Tournament'
+    TournamentStats:
+      type: array
+      items:
+        $ref: '#/components/schemas/CompetitorStats'
+    Competitor:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+    CompetitorStats:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        wins:
+          type: integer
+    Direction:
+      type: string
+      nullable: true
+      enum:
+        - N
+        - E
+        - S
+        - W
+    MoveResponse:
+      type: object
+      properties:
+        requestId:
+          type: string
+        player:
+          type: integer
+        directions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Direction'
+        loadShield:
+          type: integer
+        shootDirection:
+          $ref: '#/components/schemas/Direction'
+        shootEnergy:
+          type: integer
+        ramDirection:
+          $ref: '#/components/schemas/Direction'

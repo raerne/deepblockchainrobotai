@@ -1,0 +1,204 @@
+openapi: 3.0.1
+info:
+  title: RobotWars Client
+  description: 'This is the RobotWars Spectator API which gets push notifications for clients'
+  version: 1.0.0
+paths:
+  /notifyClient:
+    post :
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientConfig'
+        required: true
+      responses:
+        200:
+          description: 'Received Client Config'
+          content: {}
+  /notifyTournament:
+    post :
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tournament'
+        required: true
+      responses:
+        200:
+          description: 'Received Tournament'
+          content: {}
+  /notifyBout:
+    post :
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bout'
+        required: true
+      responses:
+        200:
+          description: 'Received Bout'
+          content: {}
+components:
+  schemas:
+    ClientConfig:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        url:
+          type: string
+    Tournament:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        competitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Competitor'
+        bouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bout'
+        tournamentParameters:
+          $ref: '#/components/schemas/TournamentParameters'
+        state:
+          type: string
+          enum:
+            - OPEN
+            - STARTED
+            - FINISHED
+    Bout:
+      type: object
+      properties:
+        uuid:
+          type: string
+        competitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Competitor'
+        winner:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Competitor'
+        arena:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Arena'
+        tournamentParameters:
+          $ref: '#/components/schemas/TournamentParameters'
+        state:
+          type: string
+          enum:
+            - REGISTERED
+            - STARTED
+            - FINISHED
+    Arena:
+      type: object
+      properties:
+        activePlayer:
+          type: integer
+        bounds:
+          $ref: '#/components/schemas/Bounds'
+        terrain:
+          $ref: '#/components/schemas/TerrainGrid'
+        effects:
+          $ref: '#/components/schemas/EffectGrid'
+        robots:
+          type: array
+          items:
+            $ref: '#/components/schemas/Robot'
+    Bounds:
+      type: object
+      properties:
+        rows:
+          type: integer
+        cols:
+          type: integer
+    TerrainGrid:
+      type: object
+      description: 'Map of position to terrain (Attackable is not used yet)'
+      additionalProperties:
+        type: string
+      example:
+        (0,0): 'GREEN [Movement Cost: 1, Attackable: true]'
+        (1,0): 'WATER [Movement Cost: 2, Attackable: false]'
+        (0,1): 'ROCK [Movement Cost: 1000, Attackable: false]'
+        (1,1): 'GREEN [Movement Cost: 1, Attackable: true]'
+    EffectGrid:
+      type: object
+      description: 'Map of position to effect. Amount is in brackets'
+      additionalProperties:
+        type: string
+      example:
+        (0,0): ''
+        (1,0): 'Fire(1)'
+        (0,1): 'Burnable'
+        (1,1): 'Energy(5)'
+    Robot:
+      type: object
+      properties:
+        player:
+          type: integer
+        position:
+          $ref: '#/components/schemas/Position'
+        energy:
+          type: integer
+        maxEnergy:
+          type: integer
+        health:
+          type: integer
+        shield:
+          type: integer
+        maxShield:
+          type: integer
+    Position:
+      type: object
+      properties:
+        row:
+          type: integer
+        col:
+          type: integer
+    Competitor:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+    TournamentParameters:
+      type: object
+      properties:
+        bounds:
+          $ref: '#/components/schemas/Bounds'
+        energyRefillPerRound:
+          type: integer
+        terrainWaterChance:
+          type: number
+        terrainRockChance:
+          type: number
+        effectBurnableChance:
+          type: number
+        effectEnergyChance:
+          type: number
+        effectEnergyMax:
+          type: integer
+        robotHealthInitial:
+          type: integer
+        robotEnergyInitial:
+          type: integer
+        robotEnergyMax:
+          type: integer
+        robotshieldInitial:
+          type: integer
+        robotShieldMax:
+          type: integer
+        randomSeed:
+          type: integer
+          nullable: true
