@@ -6,6 +6,7 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
+from swagger_server.models.terrain_grid_map import TerrainGridMap  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -14,15 +15,20 @@ class TerrainGrid(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self):  # noqa: E501
+    def __init__(self, map: TerrainGridMap=None):  # noqa: E501
         """TerrainGrid - a model defined in Swagger
 
+        :param map: The map of this TerrainGrid.  # noqa: E501
+        :type map: TerrainGridMap
         """
         self.swagger_types = {
+            'map': TerrainGridMap
         }
 
         self.attribute_map = {
+            'map': 'map'
         }
+        self._map = map
 
     @classmethod
     def from_dict(cls, dikt) -> 'TerrainGrid':
@@ -34,3 +40,24 @@ class TerrainGrid(Model):
         :rtype: TerrainGrid
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def map(self) -> TerrainGridMap:
+        """Gets the map of this TerrainGrid.
+
+
+        :return: The map of this TerrainGrid.
+        :rtype: TerrainGridMap
+        """
+        return self._map
+
+    @map.setter
+    def map(self, map: TerrainGridMap):
+        """Sets the map of this TerrainGrid.
+
+
+        :param map: The map of this TerrainGrid.
+        :type map: TerrainGridMap
+        """
+
+        self._map = map

@@ -39,6 +39,11 @@ components:
           type: integer
     TerrainGrid:
       type: object
+      properties:
+        map:
+          $ref: '#/components/schemas/TerrainGridMap'
+    TerrainGridMap:
+      type: object
       additionalProperties:
         type: string
       description: Map of position to terrain (Attackable is not used yet)
@@ -48,6 +53,11 @@ components:
         (0,1): 'ROCK [Movement Cost: 1000, Attackable: false]'
         (1,1): 'GREEN [Movement Cost: 1, Attackable: true]'
     EffectGrid:
+      type: object
+      properties:
+        map:
+          $ref: '#/components/schemas/EffectGridMap'
+    EffectGridMap:
       type: object
       additionalProperties:
         type: string

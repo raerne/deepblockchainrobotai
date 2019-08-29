@@ -6,6 +6,7 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
+from swagger_server.models.effect_grid_map import EffectGridMap  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -14,15 +15,20 @@ class EffectGrid(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self):  # noqa: E501
+    def __init__(self, map: EffectGridMap=None):  # noqa: E501
         """EffectGrid - a model defined in Swagger
 
+        :param map: The map of this EffectGrid.  # noqa: E501
+        :type map: EffectGridMap
         """
         self.swagger_types = {
+            'map': EffectGridMap
         }
 
         self.attribute_map = {
+            'map': 'map'
         }
+        self._map = map
 
     @classmethod
     def from_dict(cls, dikt) -> 'EffectGrid':
@@ -34,3 +40,24 @@ class EffectGrid(Model):
         :rtype: EffectGrid
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def map(self) -> EffectGridMap:
+        """Gets the map of this EffectGrid.
+
+
+        :return: The map of this EffectGrid.
+        :rtype: EffectGridMap
+        """
+        return self._map
+
+    @map.setter
+    def map(self, map: EffectGridMap):
+        """Sets the map of this EffectGrid.
+
+
+        :param map: The map of this EffectGrid.
+        :type map: EffectGridMap
+        """
+
+        self._map = map
