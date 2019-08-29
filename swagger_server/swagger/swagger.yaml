@@ -7,7 +7,7 @@ info:
 servers:
 - url: /
 paths:
-  /move:
+  /moveRequest:
     post:
       operationId: move_post
       requestBody:

@@ -6,7 +6,7 @@ import json
 
 from swagger_server.models.move_request import MoveRequest  # noqa: E501
 from swagger_server import util
-
+import requests
 
 def move_post(body):  # noqa: E501
     """move_post
@@ -78,4 +78,13 @@ def move_post(body):  # noqa: E501
     if ram:
         response["ramDirection"] = ramDirection
     print(json.dumps(response))
-    return json.dumps(response)
+
+    url = 'http://localhost:8080/bout/{uuid}/moveResponse'.format(uuid=body.bout_uuid)
+    print(url)
+    res = requests.post(url, json=json.dumps(response))
+    print('response from server:', res.text)
+    # dictFromServer = res.json()
+
+    return 200;
+
+    # return json.dumps(response)
